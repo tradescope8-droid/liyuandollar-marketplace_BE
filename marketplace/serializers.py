@@ -12,6 +12,7 @@ from .models import (
     Product,
     PurchasedCredentialAccess,
     SupportMessage,
+    SupportContactSettings,
     SupportTicket,
     Wallet,
     WalletCryptoAsset,
@@ -779,6 +780,35 @@ class SupportMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = SupportMessage
         fields = ("id", "sender_role", "sender_name", "sender_email", "message", "created_at")
+
+
+class SupportContactSettingsSerializer(serializers.ModelSerializer):
+    whatsapp_link = serializers.SerializerMethodField()
+    telegram_link = serializers.SerializerMethodField()
+
+    class Meta:
+        model = SupportContactSettings
+        fields = (
+            "telegram_channel",
+            "telegram_link",
+            "whatsapp_number",
+            "whatsapp_link",
+            "updated_at",
+        )
+
+    def get_whatsapp_link(self, obj):
+        digits = "".join(char for char in obj.whatsapp_number if char.isdigit())
+        if not digits:
+            return ""
+        return f"https://wa.me/{digits}?text=Hello%20I%20need%20help"
+
+    def get_telegram_link(self, obj):
+        handle = obj.telegram_channel.strip()
+        if not handle:
+            return ""
+        if handle.startswith("@"):
+            handle = handle[1:]
+        return f"https://t.me/{handle}"
 
 
 class SupportTicketSerializer(serializers.ModelSerializer):

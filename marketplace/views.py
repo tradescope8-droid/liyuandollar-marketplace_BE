@@ -25,6 +25,7 @@ from .models import (
     Product,
     PurchasedCredentialAccess,
     SupportMessage,
+    SupportContactSettings,
     SupportTicket,
     Wallet,
     WalletCryptoAsset,
@@ -64,6 +65,7 @@ from .serializers import (
     SelectPaymentAssetSerializer,
     SupportMessageCreateSerializer,
     SupportMessageSerializer,
+    SupportContactSettingsSerializer,
     SupportTicketCreateSerializer,
     SupportTicketDetailSerializer,
     SupportTicketSerializer,
@@ -925,3 +927,26 @@ class SupportMessageCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         message = serializer.save()
         return Response(SupportMessageSerializer(message).data, status=status.HTTP_201_CREATED)
+
+
+class SupportContactSettingsView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        config = SupportContactSettings.get_solo()
+        return Response(SupportContactSettingsSerializer(config).data)
+
+
+class AdminSupportContactSettingsView(APIView):
+    permission_classes = [IsStaffUserPermission]
+
+    def get(self, request):
+        config = SupportContactSettings.get_solo()
+        return Response(SupportContactSettingsSerializer(config).data)
+
+    def put(self, request):
+        config = SupportContactSettings.get_solo()
+        serializer = SupportContactSettingsSerializer(config, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

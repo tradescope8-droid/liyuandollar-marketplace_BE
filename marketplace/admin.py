@@ -10,6 +10,7 @@ from .models import (
     Product,
     PurchasedCredentialAccess,
     SupportMessage,
+    SupportContactSettings,
     SupportTicket,
     Wallet,
     WalletCryptoAsset,
@@ -196,3 +197,13 @@ class SupportMessageAdmin(admin.ModelAdmin):
     list_display = ("ticket", "sender_role", "sender_email", "created_at")
     list_filter = ("sender_role",)
     search_fields = ("message", "sender_email", "ticket__subject")
+
+
+@admin.register(SupportContactSettings)
+class SupportContactSettingsAdmin(admin.ModelAdmin):
+    list_display = ("telegram_channel", "whatsapp_number", "updated_at")
+
+    def has_add_permission(self, request):
+        if SupportContactSettings.objects.exists():
+            return False
+        return super().has_add_permission(request)

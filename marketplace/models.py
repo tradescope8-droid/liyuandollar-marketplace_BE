@@ -546,6 +546,29 @@ class WalletTransactionLog(models.Model):
         return f"{self.user_id} {self.transaction_type} {self.amount}"
 
 
+class SupportContactSettings(models.Model):
+    telegram_channel = models.CharField(max_length=120, default="@liliyuan111")
+    whatsapp_number = models.CharField(max_length=32, default="+66 91 817 1423")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name_plural = "Support contact settings"
+
+    def __str__(self):
+        return "Support contact settings"
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(
+            pk=1,
+            defaults={
+                "telegram_channel": "@liliyuan111",
+                "whatsapp_number": "+66 91 817 1423",
+            },
+        )
+        return obj
+
+
 class SupportTicket(models.Model):
     class Status(models.TextChoices):
         OPEN = "open", "Open"
